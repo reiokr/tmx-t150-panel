@@ -2733,10 +2733,18 @@ impl Panel {
                 changed = true;
             }
             ui.add_space(6.0);
-            small(ui, "Live pedal input (read only):");
-            axis_bar(ui, self.pedals[2], "Gas pedal", 240.0, pal().ok_green);
+            // What the pad sends, so the swap switch above is visible here:
+            // raw pedal values, swapped when the profile asks for it, and the
+            // bridge's own values while it is running (they include the swap).
+            let (throttle, brake) = if self.bridge.live.running {
+                (self.bridge.live.gas, self.bridge.live.brake)
+            } else {
+                pad_pedals(self.bridge.settings.swap_pedals, self.pedals)
+            };
+            small(ui, "Pedal output to the virtual pad (read only):");
+            axis_bar(ui, throttle, "Throttle (RT)", 240.0, pal().ok_green);
             ui.add_space(3.0);
-            axis_bar(ui, self.pedals[1], "Brake pedal", 240.0, pal().warn);
+            axis_bar(ui, brake, "Brake (LT)", 240.0, pal().warn);
             ui.add_space(4.0);
             small(
                 ui,
@@ -3215,6 +3223,16 @@ impl Panel {
     }
 }
 
+/// The throttle/brake pair the virtual pad sends, given the raw pedal values
+/// (`[clutch, brake, gas]`) and the profile's swap switch.
+fn pad_pedals(swap: bool, pedals: [f32; 3]) -> (f32, f32) {
+    if swap {
+        (pedals[1], pedals[2])
+    } else {
+        (pedals[2], pedals[1])
+    }
+}
+
 fn pedal_bar(ui: &mut Ui, value: &mut f32, label: &str, color: Color32) -> Response {
     ui.vertical(|ui| {
         let (rect, resp) = ui.allocate_exact_size(Vec2::new(44.0, 58.0), Sense::click_and_drag());
@@ -3264,6 +3282,13 @@ mod panel_tests {
         assert_eq!(p.constant, opened.constant);
         assert!(p.autocenter_game);
         assert!(!p.dirty);
+    }
+
+    #[test]
+    fn swap_switches_the_pad_pedals() {
+        let pedals = [0.1, 0.2, 0.8]; // clutch, brake, gas
+        assert_eq!(pad_pedals(false, pedals), (0.8, 0.2));
+        assert_eq!(pad_pedals(true, pedals), (0.2, 0.8));
     }
 
     #[test]
