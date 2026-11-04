@@ -9,7 +9,6 @@ mod panel;
 mod paths;
 mod protondb;
 mod setup;
-mod state;
 mod steam;
 mod theme;
 

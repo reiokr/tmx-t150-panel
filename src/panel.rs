@@ -3,7 +3,6 @@ use crate::device::{self, DeviceInfo, DeviceMonitor};
 use crate::ffb::{self, ForceFeedback};
 use crate::mechanics as mech;
 use crate::protondb;
-use crate::state;
 use crate::steam;
 use crate::theme;
 use crate::theme::*;
@@ -18,13 +17,6 @@ pub const ROTATION_MAX_LIMITED: f32 = mech::ANGLE_MAX_DEG_LIMITED as f32;
 pub const GAIN_MAX: f32 = mech::GAIN_MAX_PCT as f32;
 
 /// Dialog 106, controls 1097/1095/1075/1094/1077, left to right.
-pub const RIMS: [&str; 5] = [
-    "TM Open Wheel",
-    "PS Wheel",
-    "GT Wheel",
-    "FERRARI 458 Challenge Wheel",
-    "FERRARI F1 Wheel",
-];
 
 #[derive(Clone, Copy, PartialEq, Eq)]
 pub enum Tab {
@@ -469,11 +461,8 @@ pub struct GainSnapshot {
     overall: f32,
     constant: f32,
     periodic: f32,
-    spring: f32,
-    damper: f32,
     autocenter_strength: f32,
     autocenter_game: bool,
-    boost: bool,
 }
 
 pub struct Panel {
@@ -483,25 +472,9 @@ pub struct Panel {
     pub overall: f32,
     pub constant: f32,
     pub periodic: f32,
-    pub spring: f32,
-    pub damper: f32,
-    pub linearity: f32,
     pub autocenter_strength: f32,
-    pub boost: bool,
     pub autocenter_game: bool,
-    pub led_intensity: f32,
     pub leds_on: bool,
-    /// Dialog 118 control 1112 (`0x458`), the "Default color and lighting
-    /// effect" checkbox.  Its property is written inverted (see
-    /// `mechanics::hexaled_property_value`).
-    pub hexaled: bool,
-    /// Mode combo (dialog 118 control 1111); 1 = Sport, the LED Default.
-    pub mode: usize,
-    pub mode_notice: bool,
-    /// Last state written to panel.conf, so changes are saved once.
-    state_saved: state::PanelState,
-    pub advanced: bool,
-    pub rim: usize,
     pub steer: f32,
     pub pedals: [f32; 3],
     pub buttons: [f32; 12],
@@ -511,7 +484,6 @@ pub struct Panel {
     pub last_input: f32,
     pub show_update: bool,
     pub dirty: bool,
-    pub sep: bool,
     pub status: String,
     pub glow: f32,
     pub device: DeviceMonitor,
@@ -647,20 +619,9 @@ impl Panel {
             overall,
             constant: mech::DEFAULT_DETAIL_GAIN_PCT as f32,
             periodic: mech::DEFAULT_DETAIL_GAIN_PCT as f32,
-            spring: mech::DEFAULT_DETAIL_GAIN_PCT as f32,
-            damper: mech::DEFAULT_DETAIL_GAIN_PCT as f32,
-            linearity: 0.0,
             autocenter_strength: mech::DEFAULT_AUTOCENTER_STRENGTH_PCT as f32,
-            boost: false,
             autocenter_game: true,
-            led_intensity: mech::LED_INTENSITY_INITIAL_PCT as f32,
             leds_on: false,
-            hexaled: false,
-            mode: mech::LED_DEFAULT_MODE_INDEX,
-            mode_notice: false,
-            state_saved: state::PanelState::default(),
-            advanced: true,
-            rim: 0,
             steer: 0.0,
             pedals: [0.0, 0.0, 0.0],
             buttons: [0.0; 12],
@@ -670,7 +631,6 @@ impl Panel {
             last_input: 10.0,
             show_update: false,
             dirty: false,
-            sep: true,
             status: String::from("Wheel connected."),
             glow: 0.0,
             device: DeviceMonitor::new(),
@@ -706,17 +666,6 @@ impl Panel {
             pending_effect: None,
             saved: GainSnapshot::default(),
         };
-        let saved = state::load();
-        panel.mode = saved.mode.min(mech::MODE_LABELS.len() - 1);
-        panel.hexaled = saved.hexaled;
-        panel.boost = saved.boost;
-        panel.advanced = saved.advanced;
-        panel.led_intensity = saved.led_intensity;
-        panel.linearity = saved.linearity;
-        panel.rim = saved.rim.min(RIMS.len() - 1);
-        panel.sep = saved.pedals_separate;
-        panel.state_saved = saved;
-
         panel.profile_appid = panel
             .profiles
             .current()
@@ -734,11 +683,8 @@ impl Panel {
             overall: self.overall,
             constant: self.constant,
             periodic: self.periodic,
-            spring: self.spring,
-            damper: self.damper,
             autocenter_strength: self.autocenter_strength,
             autocenter_game: self.autocenter_game,
-            boost: self.boost,
         }
     }
 
@@ -748,11 +694,8 @@ impl Panel {
         self.overall = s.overall;
         self.constant = s.constant;
         self.periodic = s.periodic;
-        self.spring = s.spring;
-        self.damper = s.damper;
         self.autocenter_strength = s.autocenter_strength;
         self.autocenter_game = s.autocenter_game;
-        self.boost = s.boost;
         self.dirty = false;
         self.status = String::from("Changes discarded; the applied settings are back.");
     }
@@ -768,10 +711,7 @@ impl Panel {
         self.overall = mech::default_overall_pct(class) as f32;
         self.constant = mech::DEFAULT_DETAIL_GAIN_PCT as f32;
         self.periodic = mech::DEFAULT_DETAIL_GAIN_PCT as f32;
-        self.spring = mech::DEFAULT_DETAIL_GAIN_PCT as f32;
-        self.damper = mech::DEFAULT_DETAIL_GAIN_PCT as f32;
         self.autocenter_strength = mech::DEFAULT_AUTOCENTER_STRENGTH_PCT as f32;
-        self.boost = false;
         self.autocenter_game = true;
         self.dirty = true;
         self.status = String::from("Default settings restored.");
@@ -980,6 +920,7 @@ impl Panel {
         let name = EFFECTS[idx].name;
         let preset_seconds = EFFECTS[idx].dur;
         self.effect = Some(Play { idx, t });
+        self.ffb.set_effect_gains(self.constant, self.periodic);
         let overall = self.overall / GAIN_MAX;
         let pulses: Vec<ffb::Pulse> = PARTS[idx]
             .iter()
@@ -1526,13 +1467,6 @@ impl Panel {
                 ui.add_space(14.0);
             });
 
-        // Settings that have no Linux equivalent are still remembered.
-        let current = self.panel_state();
-        if current != self.state_saved {
-            state::save(&current);
-            self.state_saved = current;
-        }
-
         if self.show_update {
             self.update_dialog(ui.ctx());
         }
@@ -1734,30 +1668,14 @@ impl Panel {
                 card(ui, |ui| {
                     ui.horizontal(|ui| {
                         section_label(ui, "Pedals");
-                        ui.with_layout(Layout::right_to_left(Align::Center), |ui| {
-                            if pill_button(ui, "Separate", self.pedals_separate()).clicked() {
-                                self.set_pedals_separate(true);
-                            }
-                            if pill_button(ui, "Combined", !self.pedals_separate()).clicked() {
-                                self.set_pedals_separate(false);
-                            }
-                        });
                     });
                     ui.add_space(4.0);
                     ui.horizontal(|ui| {
-                        if self.pedals_separate() {
-                            self.pedal(ui, 0, "Clutch", Color32::from_rgb(120, 140, 160));
-                            ui.add_space(14.0);
-                            self.pedal(ui, 1, "Brake", Color32::from_rgb(190, 84, 72));
-                            ui.add_space(14.0);
-                            self.pedal(ui, 2, "Gas", Color32::from_rgb(64, 140, 96));
-                        } else {
-                            let combined = ((self.pedals[1] + self.pedals[2]) * 0.5).min(1.0);
-                            let mut c = combined;
-                            pedal_bar(ui, &mut c, "Brake + Gas", Color32::from_rgb(96, 126, 168));
-                            ui.add_space(18.0);
-                            self.pedal(ui, 0, "Clutch", Color32::from_rgb(120, 140, 160));
-                        }
+                        self.pedal(ui, 0, "Clutch", Color32::from_rgb(120, 140, 160));
+                        ui.add_space(14.0);
+                        self.pedal(ui, 1, "Brake", Color32::from_rgb(190, 84, 72));
+                        ui.add_space(14.0);
+                        self.pedal(ui, 2, "Gas", Color32::from_rgb(64, 140, 96));
                     });
                 });
                 ui.add_space(10.0);
@@ -1865,105 +1783,7 @@ impl Panel {
                     }
                 });
                 ui.add_space(7.0);
-                card(ui, |ui| {
-                    section_label(ui, "Rim");
-                    ui.add_space(2.0);
-                    egui::ComboBox::from_id_salt("rim_pick")
-                        .selected_text(RIMS[self.rim])
-                        .width(ui.available_width())
-                        .show_ui(ui, |ui| {
-                            for (i, r) in RIMS.iter().enumerate() {
-                                if ui.selectable_value(&mut self.rim, i, *r).clicked() {
-                                    self.status = format!("{r} selected.");
-                                }
-                            }
-                        });
-                    ui.add_space(5.0);
-                    section_label(ui, "Mode");
-                    ui.horizontal(|ui| {
-                        if pill_button(ui, "Normal", !self.advanced).clicked() {
-                            self.advanced = false;
-                            // `sub_1800133b0` WM_COMMAND 0x444: MessageBox
-                            // 1213, then sub_180004750(1) -> property 0x1001
-                            // = 3 (by the game), or sub_180004830(1) -> 0x1024
-                            // = 1 on the older device path.
-                            self.autocenter_game = true;
-                            self.dirty = true;
-                            self.status = format!(
-                                "Normal Mode: property 0x{:04X} = {} (centring by the game). The original closes the panel after this.",
-                                mech::AUTOCENTER_MODE_PROPERTY,
-                                mech::AUTOCENTER_MODE_GAME
-                            );
-                            self.sync_wheel_forces();
-                        }
-                        if pill_button(ui, "Advanced", self.advanced).clicked() {
-                            self.advanced = true;
-                            // 0x445: sub_180004750(0) -> 0x1001 = 6, or 5 on
-                            // a 900-degree wheel; the older path writes 0x1024
-                            // = 0.
-                            self.autocenter_game = false;
-                            self.dirty = true;
-                            self.status = format!(
-                                "Advanced Mode: property 0x{:04X} = {} ({} on a 900° wheel). The original closes the panel after this.",
-                                mech::AUTOCENTER_MODE_PROPERTY,
-                                mech::AUTOCENTER_MODE_WHEEL,
-                                mech::AUTOCENTER_MODE_WHEEL_900
-                            );
-                            self.sync_wheel_forces();
-                        }
-                    });
-                    small(
-                        ui,
-                        if self.advanced {
-                            "Advanced Mode (Default): sets the wheel's centring mode and restarts the panel."
-                        } else {
-                            "Normal Mode: sets centring by the game and restarts the panel."
-                        },
-                    );
-                    small(
-                        ui,
-                        format!(
-                            "Original: control 1092/1093 -> property 0x{:04X} = {} / {}; MessageBox 1213 first, then WM_CLOSE.",
-                            mech::AUTOCENTER_MODE_PROPERTY,
-                            mech::AUTOCENTER_MODE_GAME,
-                            mech::AUTOCENTER_MODE_WHEEL
-                        ),
-                    );
-                });
                 ui.add_space(7.0);
-                card(ui, |ui| {
-                    section_label(ui, "LED Settings");
-                    ui.add_space(2.0);
-                    ui.horizontal(|ui| {
-                        if button(ui, "Test LED", false, true).clicked() {
-                            self.leds_on = !self.leds_on;
-                            self.glow = 1.0;
-                        }
-                        ui.label(
-                            RichText::new(format!("{:.0} %", self.led_intensity))
-                                .size(12.0)
-                                .color(pal().muted),
-                        );
-                    });
-                    slider(
-                        ui,
-                        &mut self.led_intensity,
-                        0.0,
-                        GAIN_MAX,
-                        ui.available_width(),
-                        Color32::from_rgb(200, 160, 60),
-                    );
-                    // Dialog 106 control 1106 is a static label (class
-                    // "Static"), not a checkbox: `sub_1800133b0` fills it with
-                    // `"%d %%    "` (0x18004ad10) from the LED intensity at
-                    // 0x180015d6b.  Its template caption "Static" is only the
-                    // placeholder text before the first repaint.
-                    ui.label(
-                        RichText::new(format!("{:.0} %    ", self.led_intensity))
-                            .size(12.0)
-                            .color(pal().muted),
-                    );
-                });
                 ui.add_space(7.0);
                 card(ui, |ui| {
                     ui.horizontal(|ui| {
@@ -2024,13 +1844,11 @@ impl Panel {
                                     .unwrap_or_else(|| String::from("n/a")),
                             ),
                             (String::from("Events"), self.dev_events.to_string()),
-                            (String::from("Rim"), RIMS[self.rim].to_string()),
                         ],
                         None => vec![
                             (String::from("Device"), String::from("none")),
                             (String::from("Node"), String::from("-")),
                             (String::from("Driver"), String::from("-")),
-                            (String::from("Rim"), RIMS[self.rim].to_string()),
                             (String::from("Version"), String::from(env!("CARGO_PKG_VERSION"))),
                         ],
                     };
@@ -2061,24 +1879,6 @@ impl Panel {
         });
     }
 
-    fn pedals_separate(&self) -> bool {
-        self.sep
-    }
-
-    fn set_pedals_separate(&mut self, sep: bool) {
-        self.sep = sep;
-        self.dirty = true;
-        self.status = format!(
-            "{} Property 0x{:04X} = {}.",
-            if sep {
-                "Pedals report as separate axes."
-            } else {
-                "Pedals report as one combined axis."
-            },
-            mech::PEDAL_MODE_PROPERTY,
-            mech::pedal_mode_property_value(sep)
-        );
-    }
 
     fn pedal(&mut self, ui: &mut Ui, idx: usize, label: &str, color: Color32) {
         let before = self.pedals[idx];
@@ -2371,8 +2171,6 @@ impl Panel {
                         ("Overall strength", self.overall),
                         ("Constant", self.constant),
                         ("Periodic", self.periodic),
-                        ("Spring", self.spring),
-                        ("Damper", self.damper),
                     ] {
                         ui.horizontal(|ui| {
                             ui.label(RichText::new(name).size(11.5).color(pal().muted));
@@ -2621,18 +2419,6 @@ impl Panel {
     }
 
     /// Profiles: one tuning set per game, plus the virtual pad controls.
-    fn panel_state(&self) -> state::PanelState {
-        state::PanelState {
-            mode: self.mode,
-            hexaled: self.hexaled,
-            boost: self.boost,
-            advanced: self.advanced,
-            led_intensity: self.led_intensity,
-            linearity: self.linearity,
-            rim: self.rim,
-            pedals_separate: self.sep,
-        }
-    }
 
     fn tier_color(tier: protondb::Tier) -> Color32 {
         match tier {
@@ -3057,75 +2843,6 @@ impl Panel {
         }
         ui.add_space(10.0);
 
-        // Dialog 118 control 1111 is the mode combo: `sub_180005f60` rebuilds
-        // it with string ids 0x5e7..0x5ea (IDS_DDRIVE_MODE_1..4) and selects
-        // the current index; the LED Default branch lands on index 1 (Sport).
-        // Changing it in the original asks IDS_CHANGE_BUTTON_STATE 1213 first.
-        card(ui, |ui| {
-            ui.horizontal(|ui| {
-                ui.label(RichText::new("Mode").size(12.0).strong().color(pal().ink));
-                let before = self.mode;
-                egui::ComboBox::from_id_salt("drive_mode")
-                    .selected_text(mech::MODE_LABELS[self.mode])
-                    .width(150.0)
-                    .show_ui(ui, |ui| {
-                        for (i, name) in mech::MODE_LABELS.iter().enumerate() {
-                            ui.selectable_value(&mut self.mode, i, *name);
-                        }
-                    });
-                if self.mode != before {
-                    self.mode_notice = true;
-                    self.status = format!(
-                        "Mode: {} (remembered by the panel; the wheel's mode is a Windows-only property).",
-                        mech::MODE_LABELS[self.mode]
-                    );
-                }
-            });
-            small(ui, "Mode (change reactivity and damper)");
-            small(
-                ui,
-                format!(
-                    "Original: combo 1111 -> property 0x{:04X} = {} (0…3).",
-                    mech::MODE_PROPERTY,
-                    mech::mode_property_value(self.mode)
-                ),
-            );
-            if self.mode_notice {
-                ui.add_space(2.0);
-                ui.label(
-                    RichText::new(
-                        "The panel remembers this choice. The wheel's drive mode is applied \
-                         through a Windows-only vendor property, so hid-t150 cannot change it \
-                         on Linux.",
-                    )
-                    .size(11.0)
-                    .color(pal().warn),
-                );
-            }
-            ui.add_space(6.0);
-            if ui
-                .checkbox(&mut self.hexaled, "Default color and lighting effect")
-                .changed()
-            {
-                self.dirty = true;
-                self.status = format!(
-                    "HexaLed pattern {}: property 0x{:04X} = {}.",
-                    if self.hexaled { "on" } else { "off" },
-                    mech::HEXALED_PROPERTY,
-                    mech::hexaled_property_value(self.hexaled)
-                );
-            }
-            small(
-                ui,
-                format!(
-                    "Original control 1112 (0x458): BM_GETCHECK then sete, so 0x{:04X} = {} while unchecked and 0 while checked.",
-                    mech::HEXALED_PROPERTY,
-                    mech::HEXALED_UNCHECKED_VALUE
-                ),
-            );
-        });
-        ui.add_space(10.0);
-
         let (state_color, state_text) = if self.sleep_blocker.is_active() {
             (pal().ok_green, "Blocking idle sleep and screen locking now.")
         } else if !self.keep_awake {
@@ -3194,89 +2911,15 @@ impl Panel {
                 });
                 ui.add_space(10.0);
                 card(ui, |ui| {
-                    section_label(ui, "Detailed Gain Settings");
+                    section_label(ui, "Test Forces gains");
                     ui.add_space(2.0);
                     self.gain_row(ui, "Constant Gain", 1);
                     self.gain_row(ui, "Periodic Gain", 2);
-                    self.gain_row(ui, "Spring Gain", 3);
-                    self.gain_row(ui, "Damper Gain", 4);
-                    ui.add_space(2.0);
-                    small(ui, "Damper also affects the weight of the wheel.");
-                    ui.add_space(4.0);
-                    ui.horizontal(|ui| {
-                        ui.label(
-                            RichText::new("Force Feedback Linearity")
-                                .size(12.0)
-                                .color(pal().ink),
-                        );
-                        small(ui, "0 % is fully linear");
-                    });
-                    // Dialog 118 has trackbar 1113 (0x459) and static 1114
-                    // (0x45a), but no instruction in 4.24.2.0 reads either id:
-                    // the WM_HSCROLL chain in `sub_180005f60` compares only
-                    // 0x427/0x42d/0x42f/0x429/0x42b/0x431.  The control is
-                    // real UI with no effect, so it is shown disabled.
-                    ui.add_enabled_ui(mech::LINEARITY_CONNECTED, |ui| {
-                        ui.horizontal(|ui| {
-                            let w = ui.available_width() - 56.0;
-                            slider(ui, &mut self.linearity, 0.0, GAIN_MAX, w, pal().accent);
-                            ui.label(
-                                RichText::new(format!("{:.0} %", self.linearity))
-                                    .size(12.0)
-                                    .color(pal().muted),
-                            );
-                        });
-                    });
-                    small(
-                        ui,
-                        format!(
-                            "The original has this slider (control {}) and label ({}), but never reads them, so it changes nothing.",
-                            mech::LINEARITY_CONTROL_ID,
-                            mech::LINEARITY_LABEL_ID
-                        ),
-                    );
-                    ui.add_space(4.0);
-                });
-                ui.add_space(10.0);
-                card(ui, |ui| {
-                    section_label(ui, "BOOST (Constant + Spring)");
-                    ui.add_space(4.0);
-                    // Dialog 118: the ON/OFF radios 1109/1110 sit in group box
-                    // 1107 with the BOOST label 1108 (y 250-280), above the
-                    // Auto-Center group 1101 which starts at y 285.
-                    ui.horizontal(|ui| {
-                        if ui.radio(self.boost, "ON").clicked() {
-                            self.boost = true;
-                            self.dirty = true;
-                            self.status = format!(
-                                "BOOST on: property 0x{:04X} = {}.",
-                                mech::BOOST_PROPERTY,
-                                mech::boost_property_value(true)
-                            );
-                        }
-                        if ui.radio(!self.boost, "OFF (Default)").clicked() {
-                            self.boost = false;
-                            self.dirty = true;
-                            self.status = format!(
-                                "BOOST off: property 0x{:04X} = {}.",
-                                mech::BOOST_PROPERTY,
-                                mech::boost_property_value(false)
-                            );
-                        }
-                    });
                     ui.add_space(2.0);
                     small(
                         ui,
-                        "Adds constant and spring forces on top of the normal gains.",
-                    );
-                    small(
-                        ui,
-                        format!(
-                            "Original: radios 1109/1110 -> property 0x{:04X} = {} / {}.",
-                            mech::BOOST_PROPERTY,
-                            mech::boost_property_value(true),
-                            mech::boost_property_value(false)
-                        ),
+                        "Linux games send their own effects with their own gain, so these two \
+                         scale the effects played on the Test Forces page only.",
                     );
                 });
                 ui.add_space(10.0);
@@ -3285,8 +2928,8 @@ impl Panel {
                     ui.add_space(2.0);
                     for line in [
                         "Master gain scales every force the wheel receives.",
-                        "Constant and periodic shape the road and engine feel.",
-                        "Spring and damper set how heavy the rim feels to turn.",
+                        "Constant and periodic scale the Test Forces effects.",
+                        "Auto-centre sets how the wheel centres itself.",
                         "Rotation is the lock-to-lock travel, 40 to 1080 degrees.",
                     ] {
                         ui.label(RichText::new(format!("-  {line}")).size(11.5).color(pal().muted));
@@ -3591,8 +3234,7 @@ impl Panel {
             0 => &mut self.overall,
             1 => &mut self.constant,
             2 => &mut self.periodic,
-            3 => &mut self.spring,
-            _ => &mut self.damper,
+            _ => &mut self.periodic,
         };
         let before = *value;
         ui.horizontal(|ui| {
@@ -3741,7 +3383,6 @@ mod panel_tests {
         p.overall = 12.0;
         p.constant = 34.0;
         p.autocenter_game = false;
-        p.boost = true;
         p.dirty = true;
 
         p.restore_snapshot();
@@ -3749,7 +3390,6 @@ mod panel_tests {
         assert_eq!(p.overall, opened.overall);
         assert_eq!(p.constant, opened.constant);
         assert!(p.autocenter_game);
-        assert!(!p.boost);
         assert!(!p.dirty);
     }
 
@@ -3768,7 +3408,6 @@ mod panel_tests {
         p.overall = 1.0;
         p.constant = 1.0;
         p.autocenter_game = false;
-        p.boost = true;
         p.reset_defaults();
 
         // The 900-degree branch of sub_180005f60.
@@ -3779,6 +3418,5 @@ mod panel_tests {
             mech::DEFAULT_AUTOCENTER_STRENGTH_PCT as f32
         );
         assert!(p.autocenter_game);
-        assert!(!p.boost);
     }
 }

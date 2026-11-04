@@ -1,5 +1,9 @@
 //! Exact rules lifted from the original `tmeffcpl64.dll` (4.24.2.0).
 //!
+//! Some values are kept as documentation of the original panel even where this
+//! build no longer exposes the control.
+#![allow(dead_code)]
+//!
 //! Every constant here has an address in `MECHANICS.md`.  Keep this module the
 //! single source of truth: the UI must not invent its own limits.
 

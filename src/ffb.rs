@@ -175,6 +175,10 @@ pub struct ForceFeedback {
     last_count: usize,
     last_total: usize,
     last_gain: Option<i32>,
+    /// Scales applied to the effects this panel plays itself, from the
+    /// Settings page.  Games send their own effects and are unaffected.
+    const_scale: f32,
+    periodic_scale: f32,
 }
 
 impl Default for ForceFeedback {
@@ -197,6 +201,8 @@ impl ForceFeedback {
             last_count: 0,
             last_total: 0,
             last_gain: None,
+            const_scale: 1.0,
+            periodic_scale: 1.0,
         }
     }
 
@@ -338,7 +344,12 @@ impl ForceFeedback {
                 mapped += 1;
             }
             let length_ms = (pulse.seconds * 1000.0).round().clamp(20.0, 65000.0) as u16;
-            let gain = pulse.gain.clamp(0, 10_000) as f32 / 10_000.0;
+            let type_scale = if waveform == FF_CONSTANT {
+                self.const_scale
+            } else {
+                self.periodic_scale
+            };
+            let gain = pulse.gain.clamp(0, 10_000) as f32 / 10_000.0 * type_scale;
             let overall = pulse.overall.clamp(0.0, 1.0);
             let envelope = Envelope {
                 attack_length_ms: (pulse.attack_us / 1000).min(20_000) as u16,
@@ -439,6 +450,12 @@ impl ForceFeedback {
 
     /// FF_GAIN is a global multiplier the driver applies to every effect, so the
     /// Overall Strength slider keeps working even in Xbox mode.
+    /// Constant/periodic gains from the Settings page, in percent.
+    pub fn set_effect_gains(&mut self, constant_pct: f32, periodic_pct: f32) {
+        self.const_scale = (constant_pct / 100.0).clamp(0.0, 1.0);
+        self.periodic_scale = (periodic_pct / 100.0).clamp(0.0, 1.0);
+    }
+
     pub fn set_gain(&mut self, pct: f32) {
         let value = (pct.clamp(0.0, 100.0) * 655.35).round() as i32;
         if self.last_gain == Some(value) {

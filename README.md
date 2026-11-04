@@ -15,10 +15,15 @@ read straight from `/dev/input`.
 **Test Forces** — twelve force feedback effects played on the wheel through
 evdev (engine rumble, blown tyre, kerbs, and so on).
 
-**Settings** — wheel rotation (40–1080°, 900° on the TMX/T150), overall gain,
-per-effect gains, auto-centre, LED intensity and the drive mode. These are
-written to the `hid-t150` sysfs attributes, so they survive as long as the
-module is loaded.
+**Settings** — wheel rotation (40–1080°, 900° on the TMX/T150), overall gain and
+auto-centre are written to the `hid-t150` sysfs attributes and stay in effect as
+long as the module is loaded. The constant and periodic gains scale the effects
+played on the Test Forces page; Linux games send their own effects with their own
+gain, so those cannot be scaled from here.
+
+Controls that only exist as vendor COM properties on Windows (drive mode, LED
+intensity, HexaLed, BOOST, steering linearity, rim choice, combined pedals) were
+removed rather than shown as if they did something.
 
 **Profiles** — one tuning block per game:
 
