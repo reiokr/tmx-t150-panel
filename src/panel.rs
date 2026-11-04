@@ -3,6 +3,7 @@ use crate::device::{self, DeviceInfo, DeviceMonitor};
 use crate::ffb::{self, ForceFeedback};
 use crate::mechanics as mech;
 use crate::protondb;
+use crate::state;
 use crate::steam;
 use crate::theme;
 use crate::theme::*;
@@ -497,6 +498,8 @@ pub struct Panel {
     /// Mode combo (dialog 118 control 1111); 1 = Sport, the LED Default.
     pub mode: usize,
     pub mode_notice: bool,
+    /// Last state written to panel.conf, so changes are saved once.
+    state_saved: state::PanelState,
     pub advanced: bool,
     pub rim: usize,
     pub steer: f32,
@@ -655,6 +658,7 @@ impl Panel {
             hexaled: false,
             mode: mech::LED_DEFAULT_MODE_INDEX,
             mode_notice: false,
+            state_saved: state::PanelState::default(),
             advanced: true,
             rim: 0,
             steer: 0.0,
@@ -702,6 +706,17 @@ impl Panel {
             pending_effect: None,
             saved: GainSnapshot::default(),
         };
+        let saved = state::load();
+        panel.mode = saved.mode.min(mech::MODE_LABELS.len() - 1);
+        panel.hexaled = saved.hexaled;
+        panel.boost = saved.boost;
+        panel.advanced = saved.advanced;
+        panel.led_intensity = saved.led_intensity;
+        panel.linearity = saved.linearity;
+        panel.rim = saved.rim.min(RIMS.len() - 1);
+        panel.sep = saved.pedals_separate;
+        panel.state_saved = saved;
+
         panel.profile_appid = panel
             .profiles
             .current()
@@ -1510,6 +1525,13 @@ impl Panel {
                 }
                 ui.add_space(14.0);
             });
+
+        // Settings that have no Linux equivalent are still remembered.
+        let current = self.panel_state();
+        if current != self.state_saved {
+            state::save(&current);
+            self.state_saved = current;
+        }
 
         if self.show_update {
             self.update_dialog(ui.ctx());
@@ -2599,6 +2621,19 @@ impl Panel {
     }
 
     /// Profiles: one tuning set per game, plus the virtual pad controls.
+    fn panel_state(&self) -> state::PanelState {
+        state::PanelState {
+            mode: self.mode,
+            hexaled: self.hexaled,
+            boost: self.boost,
+            advanced: self.advanced,
+            led_intensity: self.led_intensity,
+            linearity: self.linearity,
+            rim: self.rim,
+            pedals_separate: self.sep,
+        }
+    }
+
     fn tier_color(tier: protondb::Tier) -> Color32 {
         match tier {
             protondb::Tier::Platinum => Color32::from_rgb(110, 165, 205),
@@ -3041,10 +3076,7 @@ impl Panel {
                 if self.mode != before {
                     self.mode_notice = true;
                     self.status = format!(
-                        "{} Property 0x{:04X} = {} ({}).",
-                        mech::MODE_CHANGE_NOTICE,
-                        mech::MODE_PROPERTY,
-                        mech::mode_property_value(self.mode),
+                        "Mode: {} (remembered by the panel; the wheel's mode is a Windows-only property).",
                         mech::MODE_LABELS[self.mode]
                     );
                 }
@@ -3061,9 +3093,13 @@ impl Panel {
             if self.mode_notice {
                 ui.add_space(2.0);
                 ui.label(
-                    RichText::new(mech::MODE_CHANGE_NOTICE)
-                        .size(11.0)
-                        .color(pal().warn),
+                    RichText::new(
+                        "The panel remembers this choice. The wheel's drive mode is applied \
+                         through a Windows-only vendor property, so hid-t150 cannot change it \
+                         on Linux.",
+                    )
+                    .size(11.0)
+                    .color(pal().warn),
                 );
             }
             ui.add_space(6.0);

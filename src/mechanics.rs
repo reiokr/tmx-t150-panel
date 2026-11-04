@@ -79,8 +79,6 @@ pub const MODE_LABELS: [&str; 4] = ["Comfort", "Sport", "Performance", "Extreme"
 /// `0x180008bd8`…`0x180008cdb`: changing the mode asks
 /// IDS_CHANGE_BUTTON_STATE 1213 "This setting will restart the steering wheel
 /// and the Control Panel." before applying.
-pub const MODE_CHANGE_NOTICE: &str =
-    "This setting will restart the steering wheel and the Control Panel.";
 
 /// Fixed-point factors from the LED Default branch: `imul eax, …, 0x15`
 /// (21) then `sar 8` for periodic, and `imul eax, …, 0xb` (11) then `sar 8`
