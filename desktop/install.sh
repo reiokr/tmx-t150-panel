@@ -11,9 +11,9 @@ set -euo pipefail
 here="$(dirname "$(readlink -f "$0")")"
 app_dir="$(dirname "$here")"
 launch="$here/launch.sh"
-desktop_template="$here/ttrs-wheel.desktop.in"
-icon="$here/ttrs-wheel.svg"
-entry_name="ttrs-wheel.desktop"
+desktop_template="$here/tmx-t150-panel.desktop.in"
+icon="$here/tmx-t150-panel.svg"
+entry_name="tmx-t150-panel.desktop"
 
 if [ "${1:-}" = "--system" ]; then
     prefix="${XDG_DATA_DIRS%%:*}"
@@ -34,7 +34,7 @@ mkdir -p "$apps_dir" "$icon_dir"
 
 sed "s|@LAUNCH_SH@|$launch|g" "$desktop_template" > "$apps_dir/$entry_name"
 chmod 644 "$apps_dir/$entry_name"
-install -m 644 "$icon" "$icon_dir/ttrs-wheel.svg"
+install -m 644 "$icon" "$icon_dir/tmx-t150-panel.svg"
 
 if command -v desktop-file-validate >/dev/null 2>&1; then
     desktop-file-validate "$apps_dir/$entry_name" || true
@@ -56,4 +56,4 @@ done
 
 echo "Installed the menu entry: $apps_dir/$entry_name"
 echo "It runs: $launch"
-echo "Look for \"TTRS Racing Wheel\" in the application menu (Settings category, or search \"TTRS\")."
+echo "Look for \"TMX/T150 Control Panel\" in the application menu (Settings category, or search \"TMX\")."

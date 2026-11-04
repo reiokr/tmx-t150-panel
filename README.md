@@ -1,4 +1,4 @@
-# TTRS Racing Wheel
+# TMX/T150 Control Panel
 
 A Linux control panel for the **Thrustmaster TMX / T150** racing wheels,
 reimplementing the look and behaviour of the Windows vendor panel, plus the
@@ -59,17 +59,17 @@ and the panel can only show simulated input.
 
 ```sh
 cargo build --release
-./target/release/ttrs-wheel
+./target/release/tmx-t150-panel
 ```
 
 Command line helpers:
 
 ```sh
-ttrs-wheel --scan              # list racing games found in the Steam libraries
-ttrs-wheel --protondb 1222680  # print the ProtonDB verdict for an AppID
-ttrs-wheel --bridge-check      # create the virtual pad for a moment and report
-ttrs-wheel --tmx-switch        # send the Xbox-to-PC mode command (needs root)
-ttrs-wheel --theme dark        # force a theme for one run
+tmx-t150-panel --scan              # list racing games found in the Steam libraries
+tmx-t150-panel --protondb 1222680  # print the ProtonDB verdict for an AppID
+tmx-t150-panel --bridge-check      # create the virtual pad for a moment and report
+tmx-t150-panel --tmx-switch        # send the Xbox-to-PC mode command (needs root)
+tmx-t150-panel --theme dark        # force a theme for one run
 ```
 
 ## Install
@@ -114,9 +114,9 @@ generates the exact line for the connected wheel.
 
 | Path | Contents |
 |---|---|
-| `~/.config/ttrs-wheel/profiles.conf` | game profiles |
-| `~/.config/ttrs-wheel/ui.conf` | theme and UI scale |
-| `~/.config/ttrs-wheel/protondb.cache` | ProtonDB verdicts, 24 h |
+| `~/.config/tmx-t150-panel/profiles.conf` | game profiles |
+| `~/.config/tmx-t150-panel/ui.conf` | theme and UI scale |
+| `~/.config/tmx-t150-panel/protondb.cache` | ProtonDB verdicts, 24 h |
 
 A menu entry is created only by `desktop/install.sh`. Game files are edited
 only when you explicitly apply a change, and a backup is kept next to the

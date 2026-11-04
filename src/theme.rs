@@ -161,13 +161,7 @@ fn system_is_dark() -> bool {
 }
 
 fn ui_config() -> std::path::PathBuf {
-    let base = std::env::var("XDG_CONFIG_HOME")
-        .map(std::path::PathBuf::from)
-        .unwrap_or_else(|_| {
-            std::path::PathBuf::from(std::env::var("HOME").unwrap_or_else(|_| String::from("/tmp")))
-                .join(".config")
-        });
-    base.join("ttrs-wheel").join("ui.conf")
+    crate::paths::config_dir().join("ui.conf")
 }
 
 /// UI zoom steps, so the text can be made larger on a 4K screen.

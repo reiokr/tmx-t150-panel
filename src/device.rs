@@ -645,7 +645,7 @@ pub fn read_settings(info: &DeviceInfo) -> Option<WheelSettings> {
 //   044f:b67e  --wValue 1-->  044f:b65d  --wValue 7-->  044f:b67f
 //
 // The panel sends those itself so a person does not have to install anything
-// else; the command is also exposed as `ttrs-wheel --tmx-switch` for a udev
+// else; the command is also exposed as `tmx-t150-panel --tmx-switch` for a udev
 // rule or a terminal.
 // ---------------------------------------------------------------------------
 
@@ -815,7 +815,7 @@ fn open_with_retry(
         if unsafe { libc::geteuid() } != 0 && !usb_node_writable(product) {
             let exe = std::env::current_exe()
                 .map(|p| p.display().to_string())
-                .unwrap_or_else(|_| String::from("ttrs-wheel"));
+                .unwrap_or_else(|_| String::from("tmx-t150-panel"));
             return Err(format!(
                 "The wheel is there as 044f:{product:04x}, but its USB port can only be opened by root. Run 'sudo {exe} --tmx-switch', or reinstall the udev rule from app/driver/t150."
             ));
@@ -986,7 +986,7 @@ impl SleepBlocker {
                 .args([
                     "--what=idle:sleep",
                     "--mode=block",
-                    "--who=TTRS Control Panel",
+                    "--who=TMX/T150 Control Panel",
                     "--why=Race wheel in use",
                     "sleep",
                     "infinity",

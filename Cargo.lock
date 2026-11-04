@@ -2301,6 +2301,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "tmx-t150-panel"
+version = "0.1.0"
+dependencies = [
+ "eframe",
+ "egui",
+ "image",
+ "libc",
+]
+
+[[package]]
 name = "tokio"
 version = "1.54.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2361,16 +2371,6 @@ name = "ttf-parser"
 version = "0.25.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "d2df906b07856748fa3f6e0ad0cbaa047052d4a7dd609e231c4f72cee8c36f31"
-
-[[package]]
-name = "ttrs-wheel"
-version = "0.1.0"
-dependencies = [
- "eframe",
- "egui",
- "image",
- "libc",
-]
 
 [[package]]
 name = "type-map"

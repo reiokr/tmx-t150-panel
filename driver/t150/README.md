@@ -37,7 +37,7 @@ PC mode.
   the USB mode (it only changes pedal behaviour). The control panel has a
   **Switch to PC mode** button that sends the same two USB requests as the
   Windows driver (`b67e → b65d → b67f`). From a terminal:
-  `ttrs-wheel --tmx-switch` (needs privileges: `sudo .../ttrs-wheel --tmx-switch`).
+  `tmx-t150-panel --tmx-switch` (needs privileges: `sudo .../tmx-t150-panel --tmx-switch`).
 - **T150:** the slide switch must be in the **PS3** position before the cable
   is connected (Thrustmaster calls this the PC position).
 

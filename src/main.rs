@@ -6,6 +6,7 @@ mod device;
 mod ffb;
 mod mechanics;
 mod panel;
+mod paths;
 mod protondb;
 mod setup;
 mod steam;
@@ -196,7 +197,7 @@ impl eframe::App for App {
 }
 
 fn main() -> eframe::Result<()> {
-    // `ttrs-wheel --tmx-switch` sends the Xbox-to-PC mode command and exits.
+    // `tmx-t150-panel --tmx-switch` sends the Xbox-to-PC mode command and exits.
     // The panel uses the same code path through polkit, and a udev rule can
     // call it directly.
     if std::env::args().any(|a| a == "--tmx-switch") {
@@ -212,7 +213,7 @@ fn main() -> eframe::Result<()> {
         };
     }
 
-    // `ttrs-wheel --bridge-check` starts the virtual pad for a moment and
+    // `tmx-t150-panel --bridge-check` starts the virtual pad for a moment and
     // reports whether /dev/uinput accepted it.  Useful for support: it needs
     // no window and no game.
     if std::env::args().any(|a| a == "--bridge-check") {
@@ -230,7 +231,7 @@ fn main() -> eframe::Result<()> {
         return Ok(());
     }
 
-    // `ttrs-wheel --protondb <appid>` prints the ProtonDB verdict and exits.
+    // `tmx-t150-panel --protondb <appid>` prints the ProtonDB verdict and exits.
     if let Some(pos) = std::env::args().position(|a| a == "--protondb") {
         let appid = std::env::args()
             .nth(pos + 1)
@@ -248,7 +249,7 @@ fn main() -> eframe::Result<()> {
         return Ok(());
     }
 
-    // `ttrs-wheel --scan` prints what the Steam library scanner finds.
+    // `tmx-t150-panel --scan` prints what the Steam library scanner finds.
     if std::env::args().any(|a| a == "--scan") {
         let (games, problems) = steam::scan();
         let mut racing = 0;
@@ -326,15 +327,15 @@ fn main() -> eframe::Result<()> {
 
     let options = eframe::NativeOptions {
         viewport: egui::ViewportBuilder::default()
-            .with_app_id("ttrs-wheel")
+            .with_app_id("tmx-t150-panel")
             .with_inner_size(size)
             .with_min_inner_size(Vec2::new(900.0, 640.0))
-            .with_title("TTRS Racing Wheel - Control Panel"),
+            .with_title("TMX/T150 Control Panel"),
         ..Default::default()
     };
 
     eframe::run_native(
-        "TTRS Racing Wheel",
+        "TMX/T150 Control Panel",
         options,
         Box::new(move |cc| {
             Ok(Box::new(App::new(

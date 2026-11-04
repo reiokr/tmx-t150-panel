@@ -1,18 +1,18 @@
 #!/usr/bin/env bash
-# Launch the TTRS wheel control panel (used by the application menu entry).
+# Launch the TMX/T150 control panel (used by the application menu entry).
 # Builds the release binary on first start so the menu entry always works.
 set -euo pipefail
 
 here="$(dirname "$(readlink -f "$0")")"
 app_dir="$(dirname "$here")"
-bin="$app_dir/target/release/ttrs-wheel"
+bin="$app_dir/target/release/tmx-t150-panel"
 
 fail() {
-    echo "ttrs-wheel: $1" >&2
+    echo "tmx-t150-panel: $1" >&2
     if command -v kdialog >/dev/null 2>&1; then
-        kdialog --title "TTRS Racing Wheel" --error "$1" >/dev/null 2>&1 || true
+        kdialog --title "TMX/T150 Control Panel" --error "$1" >/dev/null 2>&1 || true
     elif command -v notify-send >/dev/null 2>&1; then
-        notify-send "TTRS Racing Wheel" "$1" || true
+        notify-send "TMX/T150 Control Panel" "$1" || true
     fi
     exit 1
 }

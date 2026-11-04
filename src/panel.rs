@@ -1390,7 +1390,7 @@ impl Panel {
             ui.add_space(4.0);
             ui.vertical(|ui| {
                 ui.label(
-                    RichText::new("TTRS Racing Wheel")
+                    RichText::new("TMX/T150")
                         .size(21.0)
                         .strong()
                         .color(pal().ink),
@@ -3636,7 +3636,7 @@ impl Panel {
                 }
                 ui.add_space(8.0);
                 small(ui, format!("Driver package {}", mech::TMX_DRIVER_PACKAGE));
-                small(ui, "Control panel 4.24.2.0 layout, TTRS reimplementation.");
+                small(ui, "Control panel 4.24.2.0 layout, independent reimplementation.");
                 ui.add_space(6.0);
                 small(
                     ui,

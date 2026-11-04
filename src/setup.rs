@@ -159,7 +159,7 @@ impl Setup {
         p.text(
             Pos2::new(rect.left() + 20.0, rect.bottom() - 54.0),
             Align2::LEFT_BOTTOM,
-            "TTRS Racing Wheel",
+            "TMX/T150",
             FontId::proportional(14.0),
             Color32::WHITE,
         );
@@ -322,7 +322,7 @@ impl Setup {
                          component and keeps its own licence.",
                         "",
                         "What this program writes",
-                        "Profiles, the theme and the ProtonDB cache go to ~/.config/ttrs-wheel/. A menu \
+                        "Profiles, the theme and the ProtonDB cache go to ~/.config/tmx-t150-panel/. A menu \
                          entry is only created when you run desktop/install.sh yourself. Game files are \
                          edited only by the changes you apply explicitly (for example the DiRT 3 action \
                          map); backups are kept next to the originals.",

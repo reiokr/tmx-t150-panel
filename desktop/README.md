@@ -9,19 +9,19 @@ sudo desktop/install.sh --system   # all users (/usr/share or $XDG_DATA_DIRS)
 desktop/uninstall.sh            # remove the menu entry
 ```
 
-The entry is called **TTRS Racing Wheel**, in the *Settings* category; searching
-for "TTRS" or "wheel" finds it. Its context menu also opens the setup wizard
+The entry is called **TMX/T150 Control Panel**, in the *Settings* category; searching
+for "TMX" or "wheel" finds it. Its context menu also opens the setup wizard
 (*Run setup wizard*) and the connection check (*Check drivers & connections*).
 
 `install.sh` writes a `.desktop` file that runs `launch.sh`, which in turn starts
-`target/release/ttrs-wheel`. If the binary is missing (for example after
+`target/release/tmx-t150-panel`. If the binary is missing (for example after
 `cargo clean`), `launch.sh` builds it and shows a dialog if the build fails.
 
 Files:
 
-- `ttrs-wheel.desktop.in` – menu entry template (`@LAUNCH_SH@` is replaced with
+- `tmx-t150-panel.desktop.in` – menu entry template (`@LAUNCH_SH@` is replaced with
   the path to the launcher)
-- `ttrs-wheel.svg` – icon
+- `tmx-t150-panel.svg` – icon
 - `launch.sh` – launcher
 - `install.sh`, `uninstall.sh` – install and remove
 
@@ -45,7 +45,7 @@ virtual Xbox 360 pad for the games that need it.
 - **Use the virtual Xbox pad with this game** — the per-profile switch. The
   scanner and the game notes pre-fill it from their source, but the decision is
   yours: turn it off for a game that finds the wheel itself.
-- Everything is stored in `~/.config/ttrs-wheel/profiles.conf`: gain, curve,
+- Everything is stored in `~/.config/tmx-t150-panel/profiles.conf`: gain, curve,
   deadzone, pedal swap, button map and the wheel-side rotation/overall.
 
 **Scan Steam library**
@@ -85,9 +85,9 @@ the game sees the real wheel.
 ## Command line
 
 ```sh
-target/release/ttrs-wheel --scan               # list racing games in the libraries
-target/release/ttrs-wheel --protondb 646910    # ProtonDB verdict for an AppID
-target/release/ttrs-wheel --bridge-check       # create the pad for 0.9 s and report
+target/release/tmx-t150-panel --scan               # list racing games in the libraries
+target/release/tmx-t150-panel --protondb 646910    # ProtonDB verdict for an AppID
+target/release/tmx-t150-panel --bridge-check       # create the pad for 0.9 s and report
 ```
 
 # Theme and text size
@@ -96,5 +96,5 @@ The ☰ menu in the header holds the text size (100 % … 150 %, default 120 %),
 theme (System / Light / Dark), *Firmware & support* and the *Setup wizard*.
 
 *System* reads KDE's `kdeglobals` (`[Colors:Window] BackgroundNormal`) and
-follows the desktop; the choice is stored in `~/.config/ttrs-wheel/ui.conf`.
+follows the desktop; the choice is stored in `~/.config/tmx-t150-panel/ui.conf`.
 From a terminal you can force it: `--theme dark|light|system`.

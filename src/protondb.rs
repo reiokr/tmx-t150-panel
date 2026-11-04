@@ -9,7 +9,6 @@
 //! cached on disk for a day so switching profiles does not hammer the API.
 
 use std::collections::HashMap;
-use std::path::PathBuf;
 use std::time::{SystemTime, UNIX_EPOCH};
 
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]
@@ -69,6 +68,10 @@ impl Status {
     }
 }
 
+fn cache_path() -> std::path::PathBuf {
+    crate::paths::config_dir().join("protondb.cache")
+}
+
 pub fn now_secs() -> u64 {
     SystemTime::now()
         .duration_since(UNIX_EPOCH)
@@ -76,15 +79,6 @@ pub fn now_secs() -> u64 {
         .unwrap_or(0)
 }
 
-fn cache_path() -> PathBuf {
-    let base = std::env::var("XDG_CONFIG_HOME")
-        .map(PathBuf::from)
-        .unwrap_or_else(|_| {
-            PathBuf::from(std::env::var("HOME").unwrap_or_else(|_| String::from("/tmp")))
-                .join(".config")
-        });
-    base.join("ttrs-wheel").join("protondb.cache")
-}
 
 /// The API's JSON, read without a JSON parser: only four fields matter.
 pub fn parse(text: &str) -> Option<Status> {
@@ -124,7 +118,7 @@ fn fetch(appid: u32) -> Option<Status> {
         "https://www.protondb.com/api/v1/reports/summaries/{appid}.json"
     );
     let output = std::process::Command::new("curl")
-        .args(["-sfL", "--max-time", "8", "-A", "ttrs-wheel", &url])
+        .args(["-sfL", "--max-time", "8", "-A", "tmx-t150-panel", &url])
         .output()
         .ok()?;
     if !output.status.success() {

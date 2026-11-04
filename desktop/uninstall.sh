@@ -2,7 +2,7 @@
 # Remove the control panel from the application menu.
 set -euo pipefail
 
-entry_name="ttrs-wheel.desktop"
+entry_name="tmx-t150-panel.desktop"
 
 if [ "${1:-}" = "--system" ]; then
     prefix="${XDG_DATA_DIRS%%:*}"
@@ -15,7 +15,7 @@ else
     icon_dir="$data_home/icons/hicolor/scalable/apps"
 fi
 
-rm -f "$apps_dir/$entry_name" "$icon_dir/ttrs-wheel.svg"
+rm -f "$apps_dir/$entry_name" "$icon_dir/tmx-t150-panel.svg"
 
 if command -v update-desktop-database >/dev/null 2>&1; then
     update-desktop-database "$apps_dir" >/dev/null 2>&1 || true
