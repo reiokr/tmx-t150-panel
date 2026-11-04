@@ -1,0 +1,11 @@
+# Thrustmaster wheels: allow the desktop session to open them.
+SUBSYSTEM=="input", ATTRS{id/vendor}=="044f", TAG+="uaccess"
+
+# The TMX boots with Xbox/GIP firmware (044f:b67e).  Letting the session open
+# that USB device means the panel can send the PC-mode switch without asking
+# for the administrator password every time.
+SUBSYSTEM=="usb", ATTRS{idVendor}=="044f", ATTRS{idProduct}=="b67e", TAG+="uaccess"
+
+# PC-mode wheels (T150 b677, TMX b67f) are handled by the out-of-tree driver.
+SUBSYSTEM=="hid", ATTRS{idVendor}=="044f", ATTRS{idProduct}=="b677", RUN+="/sbin/modprobe hid-t150"
+SUBSYSTEM=="hid", ATTRS{idVendor}=="044f", ATTRS{idProduct}=="b67f", RUN+="/sbin/modprobe hid-t150"

@@ -1,0 +1,28 @@
+[Desktop Entry]
+Type=Application
+Name=TTRS Racing Wheel
+Name[et]=TTRS rooli juhtpaneel
+GenericName=Racing wheel control panel
+GenericName[et]=Rooli juhtpaneel
+Comment=Force feedback control panel for Thrustmaster T150 / TMX wheels
+Comment[et]=Thrustmaster T150 / TMX rooli jõudude ja seadete juhtpaneel
+Exec=@LAUNCH_SH@
+TryExec=@LAUNCH_SH@
+Icon=ttrs-wheel
+Terminal=false
+Categories=Settings;HardwareSettings;
+Keywords=wheel;steering;force;feedback;thrustmaster;t150;tmx;rool;
+Keywords[et]=rool;rooliseade;jõud;jõudude test;thrustmaster;t150;tmx;
+StartupNotify=true
+StartupWMClass=ttrs-wheel
+Actions=Setup;Diagnostics;
+
+[Desktop Action Setup]
+Name=Run setup wizard
+Name[et]=Käivita seadistusviisard
+Exec=@LAUNCH_SH@ --setup
+
+[Desktop Action Diagnostics]
+Name=Check drivers & connections
+Name[et]=Kontrolli draivereid ja ühendusi
+Exec=@LAUNCH_SH@ --diagnose

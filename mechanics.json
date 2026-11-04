@@ -1,0 +1,655 @@
+{
+ "version": 1,
+ "values": [
+  {
+   "name": "rotation angle minimum",
+   "group": "wheel",
+   "value": 40,
+   "unit": "deg",
+   "source": "sub_1800133b0 @ 0x1800159e2 (cmp edi,0x28)"
+  },
+  {
+   "name": "rotation angle maximum",
+   "group": "wheel",
+   "value": 1080,
+   "unit": "deg",
+   "source": "sub_1800133b0 @ 0x1800159ee (cmovg edi,0x438)"
+  },
+  {
+   "name": "rotation angle maximum on 900-degree wheels",
+   "group": "wheel",
+   "value": 900,
+   "unit": "deg",
+   "source": "sub_180001a50 @ 0x180001aef (cmp ecx,0x384, flag 0x1800657bc)"
+  },
+  {
+   "name": "angle trackbar divisor",
+   "group": "wheel",
+   "value": 10,
+   "unit": "deg per step",
+   "source": "sub_1800133b0 @ 0x180015c85 (lea ebx,[rax+rax*4]; add ebx,ebx)"
+  },
+  {
+   "name": "gain scale maximum",
+   "group": "settings",
+   "value": 100,
+   "unit": "%",
+   "source": "sub_18000606d @ 0x18000652a (TBM_SETRANGE 0x640000)"
+  },
+  {
+   "name": "gain scale minimum",
+   "group": "settings",
+   "value": 0,
+   "unit": "%",
+   "source": "sub_18000606d @ 0x18000652a (TBM_SETRANGE 0x640000)"
+  },
+  {
+   "name": "gain tick interval",
+   "group": "settings",
+   "value": 10,
+   "unit": "%",
+   "source": "sub_18000606d @ 0x18000658a (TBM_SETTIC 0x414 at 10)"
+  },
+  {
+   "name": "gain device scale",
+   "group": "settings",
+   "value": 100,
+   "unit": "device units per %",
+   "source": "sub_180004bd0 (imul ecx,0x64); every gain setter"
+  },
+  {
+   "name": "opening sliders read the wheel",
+   "group": "settings",
+   "value": true,
+   "source": "sub_18000606d calls sub_180001f00/sub_180001bb0/sub_1800020a0/sub_1800020c0/sub_180001c90/sub_180001b20 before TBM_SETPOS"
+  },
+  {
+   "name": "hid-t150 gain full scale",
+   "group": "settings",
+   "value": 65535,
+   "unit": "driver units at 100 %",
+   "source": "hid-t150 sysfs gain/autocenter attributes; read back by device::read_settings"
+  },
+  {
+   "name": "overall gain cap on LED variant",
+   "group": "settings",
+   "value": 70,
+   "unit": "%",
+   "source": "sub_180005f60 WM_HSCROLL 1063 (cmp eax,0x46)"
+  },
+  {
+   "name": "force feedback effects",
+   "group": "forces",
+   "value": 12,
+   "unit": "effects",
+   "source": "sub_180004f00, strings 0x180049c10-0x180049d38"
+  },
+  {
+   "name": "effect gain full scale",
+   "group": "forces",
+   "value": 10000,
+   "unit": "DIEFFECT gain",
+   "source": "CPL_effects/*.ffe DIEFFECT.dwGain @ 0x78"
+  },
+  {
+   "name": "effect gain reduced",
+   "group": "forces",
+   "value": 7000,
+   "unit": "DIEFFECT gain",
+   "source": "04_Explosion, 06_TurboBoost, 07_Gong .ffe"
+  },
+  {
+   "name": "Engine effect duration",
+   "group": "forces",
+   "value": 2.2,
+   "unit": "s",
+   "source": "01_Engine.ffe DIEFFECT.dwDuration @ 0x70"
+  },
+  {
+   "name": "Blown Tire effect duration",
+   "group": "forces",
+   "value": 1.25,
+   "unit": "s",
+   "source": "02_BlownTire.ffe DIEFFECT.dwDuration @ 0x70"
+  },
+  {
+   "name": "Boing effect duration",
+   "group": "forces",
+   "value": 0.7,
+   "unit": "s",
+   "source": "03_Boing.ffe DIEFFECT.dwDuration @ 0x70"
+  },
+  {
+   "name": "Explosion effect duration",
+   "group": "forces",
+   "value": 2.65,
+   "unit": "s",
+   "source": "04_Explosion.ffe DIEFFECT.dwDuration @ 0x70"
+  },
+  {
+   "name": "Open Sea effect duration",
+   "group": "forces",
+   "value": 4.55,
+   "unit": "s",
+   "source": "05_OpenSea.ffe DIEFFECT.dwDuration @ 0x70"
+  },
+  {
+   "name": "Turbo Boost effect duration",
+   "group": "forces",
+   "value": 1.25,
+   "unit": "s",
+   "source": "06_TurboBoost.ffe DIEFFECT.dwDuration @ 0x70"
+  },
+  {
+   "name": "Gong effect duration",
+   "group": "forces",
+   "value": 4.5,
+   "unit": "s",
+   "source": "07_Gong.ffe DIEFFECT.dwDuration @ 0x70"
+  },
+  {
+   "name": "Bumpy Road effect duration",
+   "group": "forces",
+   "value": 1.5,
+   "unit": "s",
+   "source": "08_BumpyRoad.ffe DIEFFECT.dwDuration @ 0x70"
+  },
+  {
+   "name": "Car Crash effect duration",
+   "group": "forces",
+   "value": 2.7,
+   "unit": "s",
+   "source": "09_CarCrash.ffe DIEFFECT.dwDuration @ 0x70"
+  },
+  {
+   "name": "Punch effect duration",
+   "group": "forces",
+   "value": 0.25,
+   "unit": "s",
+   "source": "10_Punch.ffe DIEFFECT.dwDuration @ 0x70"
+  },
+  {
+   "name": "Force Field effect duration",
+   "group": "forces",
+   "value": 1.0,
+   "unit": "s",
+   "source": "11_ForceField.ffe DIEFFECT.dwDuration @ 0x70"
+  },
+  {
+   "name": "Whiplash effect duration",
+   "group": "forces",
+   "value": 1.0,
+   "unit": "s",
+   "source": "12_Whiplash.ffe DIEFFECT.dwDuration @ 0x70"
+  },
+  {
+   "name": "control panel version",
+   "group": "identity",
+   "value": "4.24.2.0",
+   "source": "tmeffcpl64.dll RT_VERSION FileVersion (MECHANICS.md 'Where the real code is')"
+  },
+  {
+   "name": "driver package version",
+   "group": "identity",
+   "value": "2.0.2026.0",
+   "source": "installer payload entry table, setup.exe version column at file offset 0x2f1f473"
+  },
+  {
+   "name": "LED static control label",
+   "group": "input",
+   "value": "Static",
+   "source": "RT_DIALOG 106 control 1106 is a static label whose template text is 'Static'; sub_1800133b0 @ 0x180015d6b replaces it with \"%d %%    \""
+  },
+  {
+   "name": "LED readout control",
+   "group": "input",
+   "value": 1106,
+   "unit": "dialog 106 control id",
+   "source": "parsed RT_DIALOG 106 (static class); no BM_SETCHECK anywhere in sub_1800133b0"
+  },
+  {
+   "name": "angle default button",
+   "group": "input",
+   "value": 1003,
+   "unit": "dialog 106 control id",
+   "source": "RT_DIALOG 106 control 1003 text 'Default'; sub_1800133b0 @ 0x180015583 cmp rdi,0x3eb"
+  },
+  {
+   "name": "settings default button",
+   "group": "settings",
+   "value": 1002,
+   "unit": "dialog 118 control id",
+   "source": "RT_DIALOG 118 control 1002 text 'Default'; sub_180005f60 WM_COMMAND 1002"
+  },
+  {
+   "name": "mode list",
+   "group": "settings",
+   "value": "Comfort, Sport, Performance, Extreme",
+   "source": "dialog 118 combo 1111; ids 0x5e7-0x5ea = IDS_DDRIVE_MODE_1..4 in CPL_Msg/409.msg"
+  },
+  {
+   "name": "mode default on LED variant",
+   "group": "settings",
+   "value": "Sport",
+   "source": "sub_180005f60 @ 0x180007e08 CB_SETCURSEL index 1 after adding 0x5e7..0x5ea"
+  },
+  {
+   "name": "mode change notice",
+   "group": "settings",
+   "value": "This setting will restart the steering wheel and the Control Panel.",
+   "source": "IDS_CHANGE_BUTTON_STATE 1213 (CPL_Msg/409.msg); sub_180005f60 @ 0x180008bd8"
+  },
+  {
+   "name": "LED variant default colour",
+   "group": "settings",
+   "value": "0x80ff",
+   "source": "sub_180005f60 @ 0x180007e89 mov ecx,0x80ff; stored 0x180067ae8"
+  },
+  {
+   "name": "LED variant overall default",
+   "group": "settings",
+   "value": 50,
+   "unit": "%",
+   "source": "sub_180005f60 @ 0x180007e14 mov ecx,0x32"
+  },
+  {
+   "name": "LED variant constant default",
+   "group": "settings",
+   "value": 10,
+   "unit": "%",
+   "source": "sub_180005f60 @ 0x180008ec7 TBM_SETPOS 0x42d = 10"
+  },
+  {
+   "name": "LED variant periodic factor",
+   "group": "settings",
+   "value": 21,
+   "unit": "/256 of H",
+   "source": "sub_180005f60 @ 0x180007eec imul eax,[rsp+0x50],0x15; sar eax,8"
+  },
+  {
+   "name": "LED variant spring factor",
+   "group": "settings",
+   "value": 11,
+   "unit": "/256 of S",
+   "source": "sub_180005f60 @ 0x180007f22 imul eax,[rsp+0x54],0xb; sar eax,8"
+  },
+  {
+   "name": "LED variant damper factor",
+   "group": "settings",
+   "value": 11,
+   "unit": "/256 of L",
+   "source": "sub_180005f60 @ 0x180007f58 imul eax,[rsp+0x58],0xb; sar eax,8"
+  },
+  {
+   "name": "LED variant device id",
+   "group": "settings",
+   "value": 12,
+   "unit": "property 0x100a id",
+   "source": "sub_1800020e0: 0x180003504 reads property 0x100a into [rbp-0x78]; 0x1800039d6 cmp ecx,0xc sets 0x18006580c"
+  },
+  {
+   "name": "LED variant overall cap armed by",
+   "group": "settings",
+   "value": "0x180067af4",
+   "source": "sub_180005f60 @ 0x180007d56 sets it; cap checked at 0x18000920a-0x180009253"
+  },
+  {
+   "name": "Test Input page size",
+   "group": "layout",
+   "value": "358x348",
+   "unit": "dialog units",
+   "source": "RT_DIALOG 106 (title tab1, 37 controls)"
+  },
+  {
+   "name": "Test Forces page size",
+   "group": "layout",
+   "value": "358x328",
+   "unit": "dialog units",
+   "source": "RT_DIALOG 107 (title Tab2, 21 controls)"
+  },
+  {
+   "name": "Settings page size",
+   "group": "layout",
+   "value": "358x321",
+   "unit": "dialog units",
+   "source": "RT_DIALOG 118 (title Tab3, 40 controls)"
+  },
+  {
+   "name": "wheel rim list",
+   "group": "input",
+   "value": "TM Open Wheel, PS Wheel, GT Wheel, FERRARI 458 Challenge Wheel, FERRARI F1 Wheel",
+   "source": "dialog 106 controls 1097/1095/1075/1094/1077"
+  },
+  {
+   "name": "control panel tabs",
+   "group": "layout",
+   "value": 3,
+   "unit": "tabs",
+   "source": "RT_DIALOG 106, 107, 118"
+  },
+  {
+   "name": "wheel rims",
+   "group": "input",
+   "value": 5,
+   "unit": "rims",
+   "source": "dialog 106 controls 1097/1095/1075/1094/1077"
+  },
+  {
+   "name": "advanced mode default",
+   "group": "settings",
+   "value": true,
+   "source": "dialog 106 control 1093 'Advanced Mode (Default)'"
+  },
+  {
+   "name": "pedal routing default",
+   "group": "input",
+   "value": "separate",
+   "source": "dialog 106 control 1013 'Separate (Default)'"
+  },
+  {
+   "name": "auto-center wheel-side flag default",
+   "group": "settings",
+   "value": false,
+   "source": "sub_180005f60 Default handler calls sub_180004480(0) -> 0x180065860"
+  },
+  {
+   "name": "auto-center source default",
+   "group": "settings",
+   "value": "game",
+   "source": "sub_180005f60 Default handler checks 1075 'by the game'"
+  },
+  {
+   "name": "auto-center mode by game",
+   "group": "settings",
+   "value": 3,
+   "unit": "property 0x1001",
+   "source": "sub_180004750"
+  },
+  {
+   "name": "auto-center mode by wheel",
+   "group": "settings",
+   "value": 6,
+   "unit": "property 0x1001",
+   "source": "sub_180004750"
+  },
+  {
+   "name": "auto-center mode by wheel on 900-degree wheels",
+   "group": "settings",
+   "value": 5,
+   "unit": "property 0x1001",
+   "source": "sub_180004750 (flag 0x1800657bc)"
+  },
+  {
+   "name": "overall strength default",
+   "group": "settings",
+   "value": 75,
+   "unit": "%",
+   "source": "sub_180005f60 Default @ 0x180008249 (900-degree branch)"
+  },
+  {
+   "name": "constant gain default",
+   "group": "settings",
+   "value": 100,
+   "unit": "%",
+   "source": "sub_180005f60 Default handler"
+  },
+  {
+   "name": "periodic gain default",
+   "group": "settings",
+   "value": 100,
+   "unit": "%",
+   "source": "sub_180005f60 Default handler"
+  },
+  {
+   "name": "spring gain default",
+   "group": "settings",
+   "value": 100,
+   "unit": "%",
+   "source": "sub_180005f60 Default handler"
+  },
+  {
+   "name": "damper gain default",
+   "group": "settings",
+   "value": 100,
+   "unit": "%",
+   "source": "sub_180005f60 Default handler"
+  },
+  {
+   "name": "auto-center strength default",
+   "group": "settings",
+   "value": 50,
+   "unit": "%",
+   "source": "sub_180005f60 Default handler (control 1073)"
+  },
+  {
+   "name": "boost default",
+   "group": "settings",
+   "value": false,
+   "source": "sub_180005f60 Default handler (sub_180004480(0))"
+  },
+  {
+   "name": "boost switch",
+   "group": "settings",
+   "value": "ON / OFF radios",
+   "source": "dialog 118 group 1107 controls 1109 ON / 1110 OFF"
+  },
+  {
+   "name": "cancel restores opening gain snapshot",
+   "group": "settings",
+   "value": true,
+   "source": "sub_180003e00 on PSN_RESET copies 0x180065878 back; sub_1800020e0 takes it"
+  },
+  {
+   "name": "force feedback linearity default",
+   "group": "settings",
+   "value": "not connected in 4.24.2.0",
+   "source": "RT_DIALOG 118 control 1113 (0x459) / label 1114 (0x45a); no instruction in the image uses 0x459 and the WM_HSCROLL chain in sub_180005f60 covers only 0x427/0x42d/0x42f/0x429/0x42b/0x431"
+  },
+  {
+   "name": "rotation angle default",
+   "group": "wheel",
+   "value": 900,
+   "unit": "deg",
+   "source": "sub_180001a50 @ 0x180001ae6 (1080 when 0x1800657bc clear; 900-degree wheel reports its live angle clamped to 900)"
+  },
+  {
+   "name": "angle when a 900-degree wheel reports nothing",
+   "group": "wheel",
+   "value": 900,
+   "unit": "deg",
+   "source": "sub_180001a50 @ 0x180001aef (cmp ecx,0x384; cmovg ecx,0x384)"
+  },
+  {
+   "name": "reset angle on flagged wheel models",
+   "group": "wheel",
+   "value": 360,
+   "unit": "deg",
+   "source": "sub_1800133b0 @ 0x1800155f7 (mov esi,0x168)"
+  },
+  {
+   "name": "reset angle on LED device ids 3, 10, 14",
+   "group": "wheel",
+   "value": 360,
+   "unit": "deg",
+   "source": "sub_1800133b0 @ 0x1800155b0 (mov ecx,0x4408; bt ecx,eax)"
+  },
+  {
+   "name": "LED intensity default",
+   "group": "settings",
+   "value": 0,
+   "unit": "%",
+   "source": "0x180065894 is in .bss (zero at load); sub_1800020e0 @ 0x180003ab1 stores device property 0x1022 there and sub_180003d00 polls it once a second — no panel literal"
+  },
+  {
+   "name": "LED default colour H",
+   "group": "settings",
+   "value": 148,
+   "unit": "hue 0-255",
+   "source": "sub_18000f0d0(0x80ff) @ 0x180007e96; max blue: 170 - 42.5*(G-R)/255"
+  },
+  {
+   "name": "LED default colour S",
+   "group": "settings",
+   "value": 255,
+   "unit": "saturation 0-255",
+   "source": "sub_18000f0d0 @ 0x18000f0d0: delta*255/(2L+1), gamma bend pow((S-128)/127,2/3)*127+128"
+  },
+  {
+   "name": "LED default colour L",
+   "group": "settings",
+   "value": 127,
+   "unit": "lightness 0-255",
+   "source": "sub_18000f0d0: (max+min)>>1 for 0x80ff"
+  },
+  {
+   "name": "LED variant periodic default",
+   "group": "settings",
+   "value": 12,
+   "unit": "%",
+   "source": "sub_180005f60 @ 0x180007eec: 148*0x15>>8"
+  },
+  {
+   "name": "LED variant spring default",
+   "group": "settings",
+   "value": 10,
+   "unit": "%",
+   "source": "sub_180005f60 @ 0x180007f22: 255*0xb>>8"
+  },
+  {
+   "name": "LED variant damper default",
+   "group": "settings",
+   "value": 5,
+   "unit": "%",
+   "source": "sub_180005f60 @ 0x180007f58: 127*0xb>>8"
+  },
+  {
+   "name": "TMX latest firmware",
+   "group": "device",
+   "value": 20,
+   "unit": "version",
+   "source": "Thrustmaster TMX Force Feedback support page (https://support.thrustmaster.com/en/product/tmxforcefeedback-en/): \"Firmware: 20 is the latest version\"; hid-t150 firmware_version reports 20 on the connected wheel"
+  },
+  {
+   "name": "TMX driver package",
+   "group": "device",
+   "value": "2026_TTRS_2",
+   "source": "Thrustmaster TMX Force Feedback support page, Drivers section: PC - DRIVERS FORCE FEEDBACK [Package 2026_TTRS_2.exe] + Firmware"
+  },
+  {
+   "name": "setup payload files",
+   "group": "installer",
+   "value": 263,
+   "unit": "files",
+   "source": "unshield data1.hdr + data2.cab"
+  },
+  {
+   "name": "setup payload bytes",
+   "group": "installer",
+   "value": 49714752,
+   "unit": "bytes",
+   "source": "PE overlay after 0x111c00"
+  },
+  {
+   "name": "mode vendor property",
+   "group": "settings",
+   "value": "0xf001a000",
+   "source": "sub_180005f60 WM_COMMAND 0x457 -> sub_1800045b0 @ 0x1800045b0 (tm_api_set_properties 0xf001a000)"
+  },
+  {
+   "name": "HexaLed vendor property",
+   "group": "settings",
+   "value": "0xf001e000",
+   "source": "sub_180005f60 WM_COMMAND 0x458 -> sub_1800049a0 @ 0x1800049a0 (tm_api_set_properties 0xf001e000)"
+  },
+  {
+   "name": "HexaLed value while unchecked",
+   "group": "settings",
+   "value": 1,
+   "source": "sub_180005f60 @ 0x18000774: BM_GETCHECK 0xf0 then sete -> sub_1800049a0(1) when unchecked"
+  },
+  {
+   "name": "BOOST vendor property",
+   "group": "settings",
+   "value": "0x1042",
+   "source": "sub_1800044c0 @ 0x180004502 (mov dword [rsp+0x24],0x1042); WM_COMMAND 0x455/0x456 passes 1/0"
+  },
+  {
+   "name": "pedal routing vendor property",
+   "group": "input",
+   "value": "0xf0011000",
+   "source": "sub_180004c40 @ 0x180004c40 (tm_api_set_properties 0xf0011000); 0x3f4 Combined=1, 0x3f5 Separate=0"
+  },
+  {
+   "name": "auto-center strength vendor property",
+   "group": "settings",
+   "value": "0xf0022000",
+   "source": "sub_1800048e0 @ 0x1800048e0 (tm_api_set_properties 0xf0022000), percent*100"
+  },
+  {
+   "name": "constant gain vendor property",
+   "group": "settings",
+   "value": "0xf001b000",
+   "source": "sub_180004550 @ 0x180004550 (tm_api_set_properties 0xf001b000), percent*100; getter sub_180001bd0"
+  },
+  {
+   "name": "LED colour vendor property",
+   "group": "settings",
+   "value": "0xf001d000",
+   "source": "sub_180004940 @ 0x180004940 (tm_api_set_properties 0xf001d000); getter sub_180001e20"
+  },
+  {
+   "name": "LED opening periodic factor",
+   "group": "settings",
+   "value": 19,
+   "unit": "/256 of H",
+   "source": "sub_18000606d @ 0x180006f7x imul eax,0x13; sar 8 (opening path, not the Default branch's 21)"
+  },
+  {
+   "name": "LED periodic trackbar maximum",
+   "group": "settings",
+   "value": 18,
+   "unit": "slider units",
+   "source": "sub_18000606d @ 0x180006f8f TBM_SETRANGE 0x120000 (0…18) on the LED variant"
+  },
+  {
+   "name": "LED spring/damper trackbar maximum",
+   "group": "settings",
+   "value": 10,
+   "unit": "slider units",
+   "source": "sub_18000606d @ 0x180006f9d/0x180006fab TBM_SETRANGE 0xa0000 (0…10) on the LED variant"
+  },
+  {
+   "name": "angle trackbar tick",
+   "group": "wheel",
+   "value": 8,
+   "unit": "trackbar position",
+   "source": "sub_1800133b0 @ 0x180013eaa TBM_SETTIC 0x414 with position 8 (80 degrees)"
+  },
+  {
+   "name": "angle trackbar 900 range",
+   "group": "wheel",
+   "value": "4…90",
+   "unit": "trackbar position",
+   "source": "sub_1800133b0 @ 0x180013de2 TBM_SETRANGE 0x5a0004"
+  },
+  {
+   "name": "angle trackbar 1080 range",
+   "group": "wheel",
+   "value": "4…108",
+   "unit": "trackbar position",
+   "source": "sub_1800133b0 @ 0x18001401a TBM_SETRANGE 0x6c0004"
+  },
+  {
+   "name": "Normal/Advanced radio behaviour",
+   "group": "settings",
+   "value": "auto-center mode + restart",
+   "source": "sub_1800133b0 WM_COMMAND 0x444/0x445: MessageBox 0x4bd (1213), sub_180004750(1/0) -> property 0x1001=3/6/5, then WM_CLOSE parent"
+  },
+  {
+   "name": "HexaLed runtime label",
+   "group": "settings",
+   "value": "Default color and lighting effect",
+   "source": "CPL_Msg/409.msg IDS_DDRIVE_HEXALEDS_COLOR_CYCLE 1531; dialog 118 control 1112 template text 'Enable default HexaLed pattern.'"
+  }
+ ]
+}

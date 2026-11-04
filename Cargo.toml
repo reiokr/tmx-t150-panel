@@ -1,0 +1,16 @@
+[package]
+name = "ttrs-wheel"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+eframe = { version = "0.29", default-features = false, features = ["glow", "default_fonts", "wayland", "x11"] }
+egui = "0.29"
+image = { version = "0.25", default-features = false, features = ["png"] }
+libc = "0.2"
+
+[profile.dev]
+opt-level = 1
+
+[profile.dev.package."*"]
+opt-level = 3

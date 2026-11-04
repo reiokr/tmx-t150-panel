@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256" viewBox="0 0 256 256">
+  <defs>
+    <linearGradient id="rim" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#3d4650"/>
+      <stop offset="1" stop-color="#212831"/>
+    </linearGradient>
+    <linearGradient id="hub" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#2a6fe6"/>
+      <stop offset="1" stop-color="#134bb4"/>
+    </linearGradient>
+  </defs>
+
+  <rect x="0" y="0" width="256" height="256" rx="56" fill="#eef2f7"/>
+  <rect x="0.75" y="0.75" width="254.5" height="254.5" rx="55.25"
+        fill="none" stroke="#d3dae2" stroke-width="1.5"/>
+
+  <!-- spokes -->
+  <g stroke="#2b3138" stroke-width="17" stroke-linecap="round">
+    <line x1="128" y1="154" x2="128" y2="204"/>
+    <line x1="105.5" y1="115" x2="58.7" y2="88"/>
+    <line x1="150.5" y1="115" x2="197.3" y2="88"/>
+  </g>
+
+  <!-- rim -->
+  <circle cx="128" cy="128" r="86" fill="none" stroke="url(#rim)" stroke-width="21"/>
+  <circle cx="128" cy="128" r="86" fill="none" stroke="#5b6673" stroke-width="1.5" opacity="0.55"/>
+
+  <!-- top marker -->
+  <rect x="120" y="33" width="16" height="24" rx="8" fill="#1f6fe0"/>
+
+  <!-- hub -->
+  <circle cx="128" cy="128" r="32" fill="url(#hub)"/>
+  <circle cx="128" cy="128" r="20" fill="none" stroke="#8fb9ff" stroke-width="2" opacity="0.75"/>
+  <circle cx="128" cy="128" r="8" fill="#a9c9ff"/>
+</svg>

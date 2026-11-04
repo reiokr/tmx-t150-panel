@@ -1,0 +1,38 @@
+TTRS Racing Wheel
+=================
+
+An independent reimplementation of the user interface of a Thrustmaster racing
+wheel control panel, for Linux. It is not affiliated with, endorsed by or
+supported by Thrustmaster or Guillemot Corporation.
+
+
+Trademarks
+----------
+"Thrustmaster", "TMX", "T150", "T300" and other model names are trademarks of
+their respective owners. They appear here only to describe which hardware the
+software works with (nominative use). No logos or brand artwork are included.
+
+
+No vendor files
+---------------
+This repository contains no original driver binaries, icons, effect presets
+(.ffe), installer payloads or any other file extracted from the vendor
+package. All artwork in the application is drawn in code; all strings were
+written for this project.
+
+
+Third-party components
+----------------------
+driver/t150/       hid-t150 kernel module. Separate program, GNU General Public
+                   License version 2, by its original authors. It keeps its own
+                   licence; see driver/t150/LICENSE.
+
+egui / eframe      GUI toolkit, MIT OR Apache-2.0. Exact versions are pinned in
+                   Cargo.lock.
+
+ProtonDB           Compatibility verdicts are requested at runtime from
+                   protondb.com. Nothing from it is redistributed here.
+
+DiRT 3 action map  The action-map XML used to make DiRT 3 recognise the wheel
+                   comes from a third-party guide and is NOT part of this
+                   repository. See the game notes in the application.

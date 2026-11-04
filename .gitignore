@@ -1,0 +1,25 @@
+# Build output
+/target/
+
+# Kernel module build artefacts
+/driver/t150/build/
+/driver/t150/hid-t150/*.ko
+/driver/t150/hid-t150/*.o
+/driver/t150/hid-t150/*.mod
+/driver/t150/hid-t150/*.mod.c
+/driver/t150/hid-t150/.*.cmd
+
+# Editor and OS noise
+*.swp
+*~
+.DS_Store
+
+# Local screenshots and logs
+/shots/
+*.log
+*.bak
+*.bak-*
+
+# Kernel build metadata
+/driver/t150/hid-t150/modules.order
+/driver/t150/hid-t150/Module.symvers
