@@ -46,7 +46,6 @@ pub const OVERALL_LED_CAP_PCT: i32 = 70;
 /// The local hid-t150 driver reports the same firmware byte, so the update
 /// dialog now compares against this value instead of the T500's V47.
 pub const TMX_LATEST_FIRMWARE: u8 = 20;
-pub const TMX_DRIVER_PACKAGE: &str = "2026_TTRS_2";
 pub const TMX_SUPPORT_URL: &str =
     "https://support.thrustmaster.com/en/product/tmxforcefeedback-en/";
 

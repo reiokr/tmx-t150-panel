@@ -1347,7 +1347,7 @@ impl Panel {
                 }
                 ui.add_space(6.0);
                 ui.label(
-                    RichText::new("Package 2.0.2026.0   |   Control Panel 4.24.2.0")
+                    RichText::new(format!("Version {}", env!("CARGO_PKG_VERSION")))
                         .size(11.0)
                         .color(pal().muted),
                 );
@@ -2009,7 +2009,7 @@ impl Panel {
                             (String::from("Node"), String::from("-")),
                             (String::from("Driver"), String::from("-")),
                             (String::from("Rim"), RIMS[self.rim].to_string()),
-                            (String::from("Package"), String::from("2.0.2026.0")),
+                            (String::from("Version"), String::from(env!("CARGO_PKG_VERSION"))),
                         ],
                     };
                     for (k, v) in rows {
@@ -3266,7 +3266,7 @@ impl Panel {
                             self.start_effect(0);
                         }
                         ui.with_layout(Layout::right_to_left(Align::Center), |ui| {
-                            small(ui, "version 4.24.2.0");
+                            small(ui, concat!("version ", env!("CARGO_PKG_VERSION")));
                         });
                     });
                 });
@@ -3635,8 +3635,14 @@ impl Panel {
                     }
                 }
                 ui.add_space(8.0);
-                small(ui, format!("Driver package {}", mech::TMX_DRIVER_PACKAGE));
-                small(ui, "Control panel 4.24.2.0 layout, independent reimplementation.");
+                small(
+                    ui,
+                    concat!(
+                        "TMX/T150 Control Panel ",
+                        env!("CARGO_PKG_VERSION"),
+                        " - independent reimplementation, not affiliated with Thrustmaster."
+                    ),
+                );
                 ui.add_space(6.0);
                 small(
                     ui,

@@ -166,7 +166,7 @@ impl Setup {
         p.text(
             Pos2::new(rect.left() + 20.0, rect.bottom() - 36.0),
             Align2::LEFT_BOTTOM,
-            "Control panel 4.24.2.0 layout",
+            concat!("Version ", env!("CARGO_PKG_VERSION")),
             FontId::proportional(10.0),
             Color32::from_white_alpha(170),
         );
