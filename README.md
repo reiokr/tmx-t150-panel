@@ -74,14 +74,31 @@ tmx-t150-panel --theme dark        # force a theme for one run
 
 ## Install
 
-Add the menu entry (this user only; `--system` installs for all users):
+### Prebuilt package
+
+Download the tarball for your architecture from the
+[releases page](https://github.com/reiokr/tmx-t150-panel/releases):
 
 ```sh
-desktop/install.sh
+tar xzf tmx-t150-panel-*.tar.gz
+cd tmx-t150-panel-*/
+./install.sh              # this user; use --system for all users
 ```
 
-The wizard in the application only shows the language and the licence notice —
-it installs nothing, by design. Installation is this script.
+It installs the binary into `~/.local/bin`, writes the menu entry and the icon;
+`uninstall.sh` removes them again and leaves the settings alone. The package is
+built on Debian bookworm, so it needs glibc 2.36 or newer (Debian 12, Ubuntu
+22.04 and anything more recent). On an older system, build from source.
+
+### From a source checkout
+
+```sh
+cargo build --release
+desktop/install.sh        # menu entry, this user; --system for all users
+```
+
+The wizard inside the application only shows the language and the licence
+notice — it installs nothing, by design. Installation is the script.
 
 ## Kernel driver
 
@@ -132,6 +149,19 @@ original.
 * The TMX/T150 are 900° wheels; the panel clamps rotation accordingly.
 * `hid-t150` is out-of-tree: a kernel upgrade needs the module rebuilt
   (`sudo dkms autoinstall`).
+
+## How this was written
+
+The code was written by an AI coding agent, not by hand. The model is
+**DeepSeek V4.1 Flash** (through OpenCode, provider `opencode-go`). The person
+who started the project set the requirements, tested everything on real hardware
+(a Thrustmaster TMX) and reviewed the result. Earlier iterations of the project
+came from previous agent sessions with the same tooling; their exact model is
+not recorded.
+
+The user interface follows the layout of the Windows vendor panel, but the
+implementation, the profile system, the Steam scanner, the ProtonDB lookup and
+the virtual pad are new code written for this project.
 
 ## Licence
 
